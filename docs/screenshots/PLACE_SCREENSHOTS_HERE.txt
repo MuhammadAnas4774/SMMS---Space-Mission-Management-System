@@ -1,0 +1,2 @@
+The technical manual (SMMS-Technical-Manual.html) no longer embeds screenshots.
+This folder is unused unless you add images for other docs.
