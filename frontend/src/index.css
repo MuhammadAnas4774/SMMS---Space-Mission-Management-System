@@ -1,0 +1,110 @@
+/* ====================================================================
+   SMMS — Global Design System
+   Space-themed dark UI with premium glassmorphism + vibrant accents
+   ==================================================================== */
+
+/* ---------- CSS Custom Properties (Design Tokens) ---------- */
+:root {
+  color-scheme: dark;
+  
+  /* Core palette */
+  --bg-deep:        #05060f;
+  --bg-primary:     #0a0e1a;
+  --bg-secondary:   #111827;
+  --bg-elevated:    #1a2035;
+  --bg-surface:     #1e2642;
+  --bg-hover:       #252e4a;
+
+  /* Glass */
+  --glass-bg:       rgba(17, 24, 48, 0.65);
+  --glass-border:   rgba(99, 128, 255, 0.12);
+  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.45);
+
+  /* Text */
+  --text-primary:   #e8ecf4;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+  --text-heading:   #f1f5f9;
+
+  /* Accents */
+  --accent:         #6366f1;     /* Indigo */
+  --accent-hover:   #818cf8;
+  --accent-glow:    rgba(99, 102, 241, 0.35);
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --accent-rose:    #fb7185;
+
+  /* Borders */
+  --border-subtle:  rgba(148, 163, 184, 0.1);
+  --border-default: rgba(148, 163, 184, 0.15);
+  --border-focus:   rgba(99, 102, 241, 0.5);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Starfield background on body */
+body {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 80%, rgba(251,191,36,0.03) 0%, transparent 60%),
+    var(--bg-deep);
+  background-attachment: fixed;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.25);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.45); }
+
+/* ---------- Focus ---------- */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Selection ---------- */
+::selection {
+  background: rgba(99,102,241,0.35);
+  color: #fff;
+}
