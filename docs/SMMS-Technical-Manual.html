@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMMS — Space Mission Management System · Technical Manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-deep: #05060f;
+      --bg-card: #0c1024;
+      --bg-elevated: #11182e;
+      --text: #e8ecf4;
+      --muted: #94a3b8;
+      --heading: #f1f5f9;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --cyan: #22d3ee;
+      --cyan-glow: rgba(34, 211, 238, 0.35);
+      --border: rgba(99, 102, 241, 0.22);
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --sans: "Inter", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: 11pt;
+      line-height: 1.55;
+      color: var(--text);
+      background: var(--bg-deep);
+      /* Cyan-only wash — avoids large purple discs when printing with background graphics */
+      background-image:
+        radial-gradient(ellipse 100% 65% at 50% -18%, rgba(34, 211, 238, 0.1), transparent 58%);
+    }
+
+    .no-print {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 12px 20px;
+      background: linear-gradient(90deg, rgba(99, 102, 241, 0.95), rgba(34, 211, 238, 0.85));
+      color: #0a0e1a;
+      font-weight: 700;
+      font-size: 13px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 48px 28px 80px;
+    }
+
+    /* Cover */
+    .cover {
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 24px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: linear-gradient(165deg, var(--bg-card) 0%, #080c18 50%, var(--bg-deep) 100%);
+      box-shadow: 0 0 60px rgba(34, 211, 238, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      page-break-after: always;
+    }
+    .cover-badge {
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px var(--cyan-glow);
+    }
+    .cover h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(105deg, var(--heading) 0%, var(--cyan) 55%, var(--accent-hover) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .cover-sub {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 520px;
+    }
+    .cover-meta {
+      margin-top: 48px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    h2 {
+      margin: 48px 0 18px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -0.02em;
+      padding-bottom: 10px;
+      border-bottom: 2px solid transparent;
+      border-image: linear-gradient(90deg, var(--accent), var(--cyan)) 1;
+      page-break-after: avoid;
+    }
+    h3 {
+      margin: 28px 0 12px;
+      font-size: 1.05rem;
+      font-weight: 650;
+      color: var(--cyan);
+    }
+    h4 {
+      margin: 18px 0 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent-hover);
+    }
+
+    p { margin: 0 0 12px; color: var(--text); }
+    .muted { color: var(--muted); font-size: 10.5pt; }
+
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .card {
+      background: rgba(17, 24, 48, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin: 16px 0;
+      backdrop-filter: blur(12px);
+      page-break-inside: avoid;
+    }
+
+    code, .mono {
+      font-family: var(--mono);
+      font-size: 0.88em;
+      background: rgba(99, 102, 241, 0.12);
+      padding: 2px 7px;
+      border-radius: 5px;
+      color: #c7d2fe;
+    }
+    pre {
+      font-family: var(--mono);
+      font-size: 9.5pt;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      color: #cbd5e1;
+      page-break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10pt;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--heading);
+      font-weight: 600;
+    }
+    tr:nth-child(even) td { background: rgba(255, 255, 255, 0.02); }
+
+    ul, ol { margin: 8px 0 16px; padding-left: 22px; color: var(--text); }
+    li { margin-bottom: 6px; }
+
+    .toc {
+      columns: 2;
+      column-gap: 32px;
+      font-size: 10pt;
+    }
+    .toc li { break-inside: avoid; }
+
+    .tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(34, 211, 238, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      margin-right: 6px;
+    }
+
+    .diagram {
+      font-family: var(--mono);
+      font-size: 8.5pt;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      white-space: pre;
+      overflow-x: auto;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    @media print {
+      /*
+       * Keep the same dark indigo/cyan theme as on screen. Browsers default to stripping
+       * background ink unless "Background graphics" is on — print-color-adjust: exact
+       * asks the engine to preserve backgrounds and fills when that option is enabled.
+       * If Background graphics is off, the page may stay mostly white while text stays
+       * light — leave that toggle ON for PDF export (see banner).
+       */
+      html,
+      body,
+      .wrap,
+      .cover,
+      .cover h1,
+      .cover-badge,
+      .cover-sub,
+      .cover-meta,
+      .card,
+      pre,
+      code,
+      .mono,
+      table,
+      thead,
+      tbody,
+      tr,
+      th,
+      td,
+      .diagram,
+      .tag,
+      h2,
+      h3,
+      h4,
+      p,
+      ul,
+      ol,
+      li,
+      a {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .no-print { display: none !important; }
+
+      body {
+        font-size: 10pt;
+        background: var(--bg-deep) !important;
+        background-image:
+          radial-gradient(ellipse 100% 65% at 50% -18%, rgba(34, 211, 238, 0.12), transparent 58%) !important;
+        color: var(--text);
+      }
+
+      /* Backdrop blur does not print; use an opaque panel so cards stay on-theme */
+      .card {
+        backdrop-filter: none !important;
+        background: rgba(17, 24, 48, 0.96) !important;
+      }
+
+      .cover h1 {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .wrap { max-width: 100%; padding: 0 12px; }
+      @page {
+        size: A4;
+        margin: 14mm 16mm;
+      }
+      h2 { page-break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print">
+    Export to PDF: Chrome / Edge → <strong>Ctrl+P</strong> → <strong>Save as PDF</strong> → expand <strong>More settings</strong> → turn <strong>Background graphics</strong> <em>on</em> (required — otherwise backgrounds are dropped and light text won’t match the page).
+  </div>
+
+  <div class="wrap">
+    <header class="cover">
+      <div class="cover-badge">Technical documentation</div>
+      <h1>Space Mission Management System</h1>
+      <p class="cover-sub">
+        Full-stack telemetry-oriented operations console: MySQL data layer, Express REST API, and React mission UI with dashboard analytics, CRUD workflows, and PRD-aligned entity modeling.
+      </p>
+      <div class="cover-meta">
+        <strong style="color: var(--heading);">SMMS v1.0</strong><br />
+        Stack: React 19 · Vite · Chart.js · Node.js · Express · mysql2 · MySQL<br />
+        Repository paths: <span class="mono">frontend/</span> · <span class="mono">backend/</span> · <span class="mono">backend/sql/</span><br />
+        Document generated for coursework / portfolio presentation · Theme matched to production UI (indigo · cyan · deep space)
+      </div>
+    </header>
+
+    <section id="toc">
+      <h2>Table of contents</h2>
+      <ol class="toc">
+        <li><a href="#overview">1. Executive overview</a></li>
+        <li><a href="#architecture">2. System architecture</a></li>
+        <li><a href="#structure">3. Repository structure</a></li>
+        <li><a href="#database">4. Database design</a></li>
+        <li><a href="#api">5. REST API &amp; CRUD engine</a></li>
+        <li><a href="#frontend">6. Frontend application map</a></li>
+        <li><a href="#features">7. Feature deep-dive</a></li>
+        <li><a href="#run">8. Installation &amp; operations</a></li>
+      </ol>
+    </section>
+
+    <section id="overview">
+      <h2>1. Executive overview</h2>
+      <p>
+        The <strong>Space Mission Management System (SMMS)</strong> is a browser-based command console for orchestrating personnel, missions, spacecraft, orbital infrastructure, experiments, telemetry, and alerts. It implements a <span class="tag">PRD §7.x</span> route catalog with both <strong>specialized screens</strong> (dashboard, persons + subtype flow, multi-tab creators) and a <strong>generic CRUD shell</strong> for junction and auxiliary tables.
+      </p>
+      <div class="card">
+        <h4>Core capabilities</h4>
+        <ul>
+          <li><strong>Mission Control Dashboard</strong> — live UTC clock, KPI stat chips, Chart.js mission status bar chart, entity bar chart, synthetic telemetry sparkline, recent alerts grid.</li>
+          <li><strong>Person lifecycle</strong> — optional Astronaut / Ground Control subtype creation with validation and delete-impact preview endpoint.</li>
+          <li><strong>Typed spacecraft &amp; modules</strong> — Capsule / Shuttle / Rocket and Habitat / Laboratory flows per table-per-type (TPT) patterns.</li>
+          <li><strong>Experiment taxonomy</strong> — Biological, Physical, Astronomy, Engineering experiment subtype records.</li>
+          <li><strong>Unified REST layer</strong> — parameterized SQL via entity registry (<span class="mono">backend/src/entities.js</span>) drives list/filter/sort/create/update/delete.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <h2>2. System architecture</h2>
+      <p>The solution follows a classical three-tier pattern:</p>
+      <ol>
+        <li><strong>Presentation</strong> — React 19 functional components, client-side routing, Axios HTTP, contextual toast notifications.</li>
+        <li><strong>Application</strong> — Express middleware pipeline with JSON body parsing, centralized entity routing, and specialized handlers registered before generic parameterized routes.</li>
+        <li><strong>Persistence</strong> — InnoDB tables with declarative FK constraints, cascades for subtype ownership, and restrictive deletes where junction rows reference parents.</li>
+      </ol>
+      <div class="diagram">┌─────────────┐     HTTPS (dev:5173→5000)    ┌─────────────┐     TCP 3306      ┌──────────┐
+│   Browser   │ ───────────────────────────► │   Express   │ ────────────────► │  MySQL   │
+│  React SPA  │ ◄─────────────────────────── │   index.js  │ ◄──────────────── │  smms DB │
+└─────────────┘         JSON                  └─────────────┘    result sets   └──────────┘</div>
+    </section>
+
+    <section id="structure">
+      <h2>3. Repository structure</h2>
+      <table>
+        <thead><tr><th>Path</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">frontend/src/App.jsx</span></td><td>Route table, sidebar shell, NotificationProvider, Starfield canvas.</td></tr>
+          <tr><td><span class="mono">frontend/src/pages/*.jsx</span></td><td>Feature pages (dashboard, persons, missions, spacecraft, etc.).</td></tr>
+          <tr><td><span class="mono">frontend/src/components/</span></td><td>Reusable UI: EnhancedCrudPage, DataTable, Charts, SystemOverviewCard, etc.</td></tr>
+          <tr><td><span class="mono">frontend/src/config/nav.jsx</span></td><td>Sidebar labels + Lucide icon map.</td></tr>
+          <tr><td><span class="mono">frontend/src/config/entitySchemas.js</span></td><td>Field metadata driving generic CRUD forms.</td></tr>
+          <tr><td><span class="mono">backend/src/index.js</span></td><td>All HTTP handlers &amp; SQL templates for CRUD + dashboard.</td></tr>
+          <tr><td><span class="mono">backend/src/entities.js</span></td><td>Entity registry: SQL table name, PK, search/filter/sort whitelists.</td></tr>
+          <tr><td><span class="mono">backend/src/db.js</span></td><td>mysql2 connection pool &amp; environment wiring.</td></tr>
+          <tr><td><span class="mono">backend/sql/schema.sql</span></td><td>Authoritative DDL — tables, FK graph, CHECK constraints.</td></tr>
+          <tr><td><span class="mono">backend/sql/seed.sql</span></td><td>Demonstration dataset load script.</td></tr>
+          <tr><td><span class="mono">package.json</span> (root)</td><td>NPM workspaces orchestrating concurrent dev servers.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="database">
+      <h2>4. Database design</h2>
+      <p>
+        Schema script <span class="mono">backend/sql/schema.sql</span> provisions database <strong>smms</strong> and applies table-per-type extensions for spacecraft (Capsule, Shuttle, Rocket), modules (Habitat, Laboratory), and experiments (Biological, Physical, Astronomy, Engineering_exp). Telemetry splits into parent <span class="mono">TELEMETRY_DATA</span> plus subtype payloads (<span class="mono">SYSTEM_STATUS</span>, <span class="mono">ENVIRONMENTAL_DATA</span>, <span class="mono">NAVIGATION_DATA</span>).
+      </p>
+      <h3>4.1 Primary entities</h3>
+      <table>
+        <thead><tr><th>Table</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>PERSON</td><td>Human identity root; referenced by ASTRONAUT and GROUND_CONTROL (1:1).</td></tr>
+          <tr><td>MISSION</td><td>Mission planning record — schedule, budget, risk, status lifecycle.</td></tr>
+          <tr><td>SPACECRAFT</td><td>Vehicle registry with subtype specialization rows.</td></tr>
+          <tr><td>SPACE_STATION / MODULE</td><td>Orbital assembly graph; module subtype splits lab vs habitat.</td></tr>
+          <tr><td>EXPERIMENT</td><td>Science campaign metadata + subtype detail tables.</td></tr>
+          <tr><td>TELEMETRY_DATA</td><td>Ingest feed index linking missions / spacecraft.</td></tr>
+          <tr><td>ALERT</td><td>Operational alerting with acknowledgement flag.</td></tr>
+          <tr><td>EQUIPMENT / SCHEDULED_EVENT</td><td>Logistics &amp; temporal planning satellites.</td></tr>
+          <tr><td>Junction tables</td><td>MISSION_ASSIGNMENT, SPACECRAFT_MISSION, EXPERIMENT_EXECUTION, MODULE_INTEGRATION.</td></tr>
+        </tbody>
+      </table>
+      <h3>4.2 Referential integrity highlights</h3>
+      <ul>
+        <li>Astronaut subtype references PERSON with <strong>ON DELETE CASCADE</strong> — removing a person clears subtype projections.</li>
+        <li>Generic DELETE endpoint surfaces MySQL errno <strong>1451</strong> as HTTP 409 when dependents block removal.</li>
+        <li>Optional mentor linkage inside ASTRONAUT self-references with ON DELETE SET NULL.</li>
+      </ul>
+    </section>
+
+    <section id="api">
+      <h2>5. REST API &amp; CRUD engine</h2>
+      <p>
+        Dynamic routes resolve <span class="mono">:entity</span> keys against <span class="mono">entities.js</span>. Identifier quoting uses backticks to safely compose SQL identifiers while values remain bound parameters (injection-safe pattern).
+      </p>
+      <h3>5.1 Generic CRUD</h3>
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Behaviour</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td><span class="mono">/api/:entity</span></td><td>Paginated list (<span class="mono">page</span>, <span class="mono">limit</span>), optional <span class="mono">search</span> (LIKE across whitelist), column filters, sort (<span class="mono">sort</span>, <span class="mono">dir</span>).</td></tr>
+          <tr><td>GET</td><td><span class="mono">/api/:entity/:id</span></td><td>Single row by primary key.</td></tr>
+          <tr><td>POST</td><td><span class="mono">/api/:entity</span></td><td>Insert JSON body; returns hydrated row (SELECT after insert).</td></tr>
+          <tr><td>PUT</td><td><span class="mono">/api/:entity/:id</span></td><td>Partial update excluding PK column.</td></tr>
+          <tr><td>DELETE</td><td><span class="mono">/api/:entity/:id</span></td><td>Hard delete; FK violations mapped to friendly conflict message.</td></tr>
+        </tbody>
+      </table>
+      <h3>5.2 Specialized endpoints</h3>
+      <table>
+        <thead><tr><th>Route</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">GET /api/dashboard/summary</span></td><td>Aggregated counts, mission status histogram, recent alerts feed.</td></tr>
+          <tr><td><span class="mono">GET /api/missions/:missionId/assignments</span></td><td>Crew assignment drill-down.</td></tr>
+          <tr><td><span class="mono">GET /api/missions/:missionId/executions</span></td><td>Experiment execution listing scoped to mission.</td></tr>
+          <tr><td><span class="mono">GET /api/telemetry/:telemetryId/status</span></td><td>SYSTEM_STATUS join lookup.</td></tr>
+          <tr><td><span class="mono">GET /api/persons/:personId/delete-impact</span></td><td>Pre-delete subtype cardinality probe.</td></tr>
+          <tr><td><span class="mono">GET /api/health</span></td><td>Liveness probe executing <span class="mono">SELECT 1</span>.</td></tr>
+        </tbody>
+      </table>
+      <h3>5.3 Registered entity keys (excerpt)</h3>
+      <p class="muted">Full list in source — includes auxiliary CRUD tables for CRUD pages.</p>
+      <pre>persons, astronauts, ground_control, missions, spacecraft, stations,
+modules, experiments, telemetry, alerts, equipment, events,
+mission_assignments, spacecraft_missions, experiment_executions,
+module_integrations, capsules, shuttles, rockets, habitats, laboratories,
+biological, physical, astronomy, engineering_exp, system_status,
+environmental_data, navigation_data</pre>
+    </section>
+
+    <section id="frontend">
+      <h2>6. Frontend application map</h2>
+      <table>
+        <thead><tr><th>Route</th><th>Screen</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">/</span></td><td>Dashboard</td><td><span class="mono">DashboardPage.jsx</span> + Charts + SystemOverviewCard</td></tr>
+          <tr><td><span class="mono">/persons</span></td><td>Person management</td><td><span class="mono">PersonsPage.jsx</span> — subtype UX + API orchestration</td></tr>
+          <tr><td><span class="mono">/astronauts</span></td><td>Astronaut roster</td><td><span class="mono">AstronautsPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/ground-control</span></td><td>Ground control roster</td><td><span class="mono">GroundControlPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/missions</span></td><td>Missions</td><td><span class="mono">MissionsPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/spacecraft</span></td><td>Spacecraft + subtype tabs</td><td><span class="mono">SpacecraftPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/stations</span></td><td>Stations</td><td><span class="mono">StationsPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/modules</span></td><td>Modules + subtype tabs</td><td><span class="mono">ModulesPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/experiments</span></td><td>Experiments + subtype tabs</td><td><span class="mono">ExperimentsPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/telemetry</span></td><td>Telemetry console</td><td><span class="mono">TelemetryPage.jsx</span></td></tr>
+          <tr><td><span class="mono">/alerts</span> … <span class="mono">/module-integrations</span></td><td>Generic CRUD suite</td><td><span class="mono">EnhancedCrudPage</span> + schema configs</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="features">
+      <h2>7. Feature deep-dive</h2>
+      <h3>7.1 Dashboard analytics</h3>
+      <ul>
+        <li><strong>MissionStatusChart</strong> — vertical bar chart of mission counts by status (grouped SQL); avoids doughnut canvas sizing issues in layout.</li>
+        <li><strong>EntityBarChart</strong> — top-N table cardinality snapshot.</li>
+        <li><strong>TelemetryLineChart</strong> — illustrative dual-series timeline blending mission &amp; alert signals.</li>
+      </ul>
+      <h3>7.2 Theming &amp; UX polish</h3>
+      <ul>
+        <li>CSS variables in <span class="mono">index.css</span> establish glassmorphism, neon accents (#6366f1 / #22d3ee), and motion primitives.</li>
+        <li>Lucide icons unify sidebar + dashboard chips (replacing legacy emoji accents).</li>
+        <li><span class="mono">SystemOverviewCard</span> — centered overview narrative, live UTC mission clock, and creator attribution (no heavy decorative graphics).</li>
+      </ul>
+      <h3>7.3 Operational safeguards</h3>
+      <ul>
+        <li>BigInt JSON serialization shim on Express json replacer.</li>
+        <li>SQL identifier hardening via <span class="mono">quoteIdent</span>.</li>
+        <li>Startup connectivity banner guiding schema import when DB absent.</li>
+      </ul>
+    </section>
+
+    <section id="run">
+      <h2>8. Installation &amp; operations</h2>
+      <h4>Database bootstrap</h4>
+      <ol>
+        <li>Execute <span class="mono">backend/sql/schema.sql</span> then <span class="mono">backend/sql/seed.sql</span> (phpMyAdmin import, Workbench, or CLI redirection).</li>
+        <li>Copy <span class="mono">backend/.env.example</span> → <span class="mono">.env</span>; align credentials with MySQL.</li>
+      </ol>
+      <h4>Development servers</h4>
+      <pre>cd "Database Project"
+npm install
+npm run dev          # concurrently API :5000 + Vite :5173</pre>
+      <h4>Production build</h4>
+      <pre>npm run build:frontend   # outputs frontend/dist static assets</pre>
+      <p class="muted">Serve <span class="mono">dist/</span> behind any static host; configure reverse proxy to backend API origin.</p>
+    </section>
+
+    <footer class="card" style="margin-top:48px;text-align:center;">
+      <p style="margin:0;font-size:10pt;color:var(--muted);">
+        SMMS documentation · aligns with application theme (deep space glass UI).<br />
+        PDF tip: enable <strong>Background graphics</strong> when printing for accurate colors.<br />
+        © <span id="y"></span> Space Mission Management System · Academic / portfolio use.
+      </p>
+    </footer>
+  </div>
+  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+</body>
+</html>
